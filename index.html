@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Advent Calendar Roulette</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg-main: #0b1b25;
+      --bg-card: rgba(255, 255, 255, 0.08);
+      --accent: #f4c542;
+      --accent-2: #e43f5a;
+      --text-main: #ffffff;
+      --text-muted: #c4d0dd;
+      --door-bg: rgba(255, 255, 255, 0.06);
+      --door-open-bg: rgba(255, 255, 255, 0.18);
+      --today-glow: 0 0 12px rgba(244, 197, 66, 0.9);
+      --border-radius: 14px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #234567 0, #0b1b25 45%, #050910 100%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 12px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 960px;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.12),
+        rgba(255, 255, 255, 0.02)
+      );
+      border-radius: 24px;
+      padding: 24px 20px 28px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 28px 60px rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(18px);
+    }
+
+    @media (min-width: 768px) {
+      .container { padding: 30px 32px 34px; }
+    }
+
+    /* little "snow" dots */
+    .snow {
+      pointer-events: none;
+      position: absolute;
+      inset: 0;
+      opacity: 0.24;
+      background-image:
+        radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255,255,255,0.5) 1px, transparent 1px);
+      background-size: 120px 120px, 180px 180px;
+      background-position: 0 0, 60px 60px;
+      animation: snow-move 22s linear infinite;
+    }
+
+    @keyframes snow-move {
+      0% { transform: translateY(-20px); }
+      100% { transform: translateY(20px); }
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+    }
+
+    h1 {
+      margin: 0 0 4px;
+      font-size: clamp(1.8rem, 3vw, 2.3rem);
+      display: flex;
+      align-items: center;
+      gap: 0.4em;
+      flex-wrap: wrap;
+    }
+
+    h1 span.emoji { font-size: 1.4em; }
+
+    .subtitle {
+      margin: 0 0 18px;
+      color: var(--text-muted);
+      font-size: 0.98rem;
+    }
+
+    .top-row {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    @media (min-width: 768px) {
+      .top-row { flex-direction: row; }
+    }
+
+    .roulette-card,
+    .calendar-card {
+      background: var(--bg-card);
+      border-radius: var(--border-radius);
+      padding: 18px 18px 20px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .roulette-card { flex: 1.1; }
+    .calendar-card { flex: 1.4; }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    button {
+      border: none;
+      outline: none;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    #spinButton {
+      padding: 10px 22px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #f4c542, #f08c2e);
+      color: #201001;
+      font-weight: 600;
+      font-size: 0.98rem;
+      box-shadow:
+        0 10px 24px rgba(0, 0, 0, 0.45),
+        0 0 0 1px rgba(255, 255, 255, 0.2);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4em;
+      transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.12s;
+    }
+
+    #spinButton:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow:
+        0 14px 28px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(255, 255, 255, 0.24);
+      filter: brightness(1.02);
+    }
+
+    #spinButton:active:not(:disabled) {
+      transform: translateY(1px) scale(0.99);
+      box-shadow:
+        0 6px 16px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(255, 255, 255, 0.16);
+    }
+
+    #spinButton:disabled {
+      cursor: not-allowed;
+      opacity: 0.65;
+      box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.45),
+        0 0 0 1px rgba(255, 255, 255, 0.14);
+    }
+
+    #message {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .result-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .result-label {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    #resultNumber {
+      width: 78px;
+      height: 78px;
+      border-radius: 22px;
+      border: 2px solid rgba(255, 255, 255, 0.48);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.4rem;
+      font-weight: 700;
+      background: radial-gradient(circle at 30% 20%, #ffe9a4 0, #f4c542 50%, #c77b22 100%);
+      color: #2d1a02;
+      box-shadow:
+        0 10px 20px rgba(0, 0, 0, 0.55),
+        0 0 0 3px rgba(0, 0, 0, 0.45);
+    }
+
+    /* spin animation */
+    .spin { animation: spin-bounce 0.7s ease-out; }
+
+    @keyframes spin-bounce {
+      0%   { transform: scale(1) rotate(0deg); }
+      30%  { transform: scale(1.25) rotate(8deg); }
+      60%  { transform: scale(1.25) rotate(-8deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+
+    #shareLink {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      word-break: break-all;
+    }
+
+    #shareLink a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    #shareLink a:hover { text-decoration: underline; }
+
+    #copyButton {
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(244, 197, 66, 0.1);
+      color: var(--accent);
+      font-size: 0.78rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2em;
+      margin-left: 6px;
+      border: 1px solid rgba(244, 197, 66, 0.4);
+    }
+
+    #copyButton:hover {
+      background: rgba(244, 197, 66, 0.18);
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .calendar-header h2 {
+      margin: 0;
+      font-size: 1.02rem;
+      display: flex;
+      align-items: center;
+      gap: 0.3em;
+    }
+
+    .calendar-header span.sub {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+
+    .doors-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    @media (min-width: 600px) {
+      .doors-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+    }
+
+    @media (min-width: 900px) {
+      .doors-grid { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+    }
+
+    .door {
+      position: relative;
+      border-radius: 12px;
+      background: var(--door-bg);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 6px 6px 8px;
+      min-height: 70px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s;
+      cursor: default;
+    }
+
+    .door:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
+      background: rgba(255, 255, 255, 0.09);
+    }
+
+    .door-number {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .door-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .door.opened {
+      background: var(--door-open-bg);
+      border-color: rgba(244, 197, 66, 0.7);
+    }
+
+    .door.opened .door-label { color: var(--accent); }
+
+    .door.today { box-shadow: var(--today-glow); }
+
+    .door-image {
+      margin-top: 6px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: rgba(0, 0, 0, 0.3);
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .door-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .footer-note {
+      margin-top: 14px;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* PASSWORD OVERLAY */
+    #passwordOverlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at top, #1c3550 0, #050910 60%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+
+    #passwordOverlay.hidden { display: none; }
+
+    .password-box {
+      width: 100%;
+      max-width: 380px;
+      background: rgba(5, 10, 18, 0.9);
+      border-radius: 18px;
+      padding: 22px 20px 20px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.75);
+      border: 1px solid rgba(255,255,255,0.16);
+      color: var(--text-main);
+    }
+
+    .password-box h2 {
+      margin: 0 0 8px;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4em;
+    }
+
+    .password-box p {
+      margin: 0 0 14px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    .password-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .password-row input {
+      flex: 1;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.3);
+      background: rgba(3, 7, 15, 0.9);
+      color: var(--text-main);
+      font: inherit;
+    }
+
+    .password-row input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(244,197,66,0.4);
+    }
+
+    #passwordSubmit {
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #f4c542, #f08c2e);
+      color: #201001;
+      font-weight: 600;
+      font-size: 0.9rem;
+      white-space: nowrap;
+    }
+
+    #passwordError {
+      min-height: 1.1em;
+      font-size: 0.8rem;
+      color: #ff8787;
+    }
+  </style>
+</head>
+<body>
+  <!-- PASSWORD OVERLAY -->
+  <div id="passwordOverlay">
+    <div class="password-box">
+      <h2>🎄 Advent Access</h2>
+      <p>Enter the password to open the advent roulette.</p>
+      <form id="passwordForm">
+        <div class="password-row">
+          <input
+            id="passwordInput"
+            type="password"
+            autocomplete="current-password"
+            placeholder="Password"
+            required
+          />
+          <button id="passwordSubmit" type="submit">Enter</button>
+        </div>
+        <div id="passwordError"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div class="container" id="appContainer" style="visibility:hidden;">
+    <div class="snow"></div>
+    <div class="content">
+      <header>
+        <h1>
+          <span class="emoji">🎄</span>
+          Advent Calendar Roulette
+        </h1>
+        <p class="subtitle">
+          You earn 1 spin per day. If you skip days, your unused spins stack up — but each door from 1 to 24 can only open once.
+        </p>
+      </header>
+
+      <div class="top-row">
+        <!-- Roulette / result card -->
+        <section class="roulette-card" aria-label="Advent roulette">
+          <div class="controls">
+            <button id="spinButton" type="button">
+              <span>Spin the roulette</span> <span>🎁</span>
+            </button>
+            <div id="message"></div>
+          </div>
+
+          <div class="result-wrapper">
+            <div>
+              <div class="result-label">Last spin result:</div>
+              <div id="resultNumber">?</div>
+            </div>
+            <div id="shareLink"></div>
+          </div>
+        </section>
+
+        <!-- Calendar grid card -->
+        <section class="calendar-card" aria-label="Advent calendar doors">
+          <div class="calendar-header">
+            <h2>Advent doors <span>🗓️</span></h2>
+            <span class="sub">Opened doors are highlighted — hover to see their surprise image.</span>
+          </div>
+          <div id="doorsGrid" class="doors-grid"></div>
+        </section>
+      </div>
+
+      <p class="footer-note">
+        Tip: To add images, create an <code>images</code> folder next to this file and add
+        files named <code>day-1.png</code>, <code>day-2.png</code>, … <code>day-24.png</code>.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // ========= SIMPLE CLIENT-SIDE PASSWORD =========
+    // ⚠️ This is NOT secure against tech-savvy users.
+    // It only keeps casual visitors from using the page.
+    const ADVENT_PASSWORD = "CHANGEME"; // <-- change this to your password
+    const STORAGE_AUTH_OK = "advent_auth_ok";
+
+    const passwordOverlay = document.getElementById("passwordOverlay");
+    const passwordForm = document.getElementById("passwordForm");
+    const passwordInput = document.getElementById("passwordInput");
+    const passwordError = document.getElementById("passwordError");
+    const appContainer = document.getElementById("appContainer");
+
+    // ========= EXISTING ADVENT LOGIC =========
+    const TOTAL_DOORS = 24;
+    const STORAGE_LAST_SEEN_DAY = "advent_last_seen_day";
+    const STORAGE_LAST_NUMBER = "advent_last_number";
+    const STORAGE_OPENED = "advent_opened_numbers";
+    const STORAGE_CREDITS = "advent_spin_credits"; // how many spins are available
+
+    const spinButton = document.getElementById("spinButton");
+    const messageEl = document.getElementById("message");
+    const resultNumberEl = document.getElementById("resultNumber");
+    const doorsGrid = document.getElementById("doorsGrid");
+    const shareLinkEl = document.getElementById("shareLink");
+
+    function todayKey() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, "0");
+      const d = String(now.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function keyToDate(key) {
+      const [y, m, d] = key.split("-").map(Number);
+      return new Date(y, m - 1, d);
+    }
+
+    function daysBetween(dateKeyA, dateKeyB) {
+      const a = keyToDate(dateKeyA);
+      const b = keyToDate(dateKeyB);
+      const diffMs = b - a;
+      if (diffMs <= 0) return 0;
+      return Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    }
+
+    function loadOpenedNumbers() {
+      try {
+        const raw = localStorage.getItem(STORAGE_OPENED);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveOpenedNumbers(list) {
+      localStorage.setItem(STORAGE_OPENED, JSON.stringify(list));
+    }
+
+    function animateResult() {
+      resultNumberEl.classList.remove("spin");
+      void resultNumberEl.offsetWidth; // reflow
+      resultNumberEl.classList.add("spin");
+    }
+
+    function buildShareLink(number) {
+      const url =
+        window.location.origin +
+        window.location.pathname +
+        `?n=${encodeURIComponent(number)}`;
+      shareLinkEl.innerHTML = `
+        <div>
+          <div>Share this number:</div>
+          <div>
+            <a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>
+            <button id="copyButton" type="button">Copy link 📋</button>
+          </div>
+        </div>
+      `;
+
+      const copyBtn = document.getElementById("copyButton");
+      if (copyBtn && navigator.clipboard && navigator.clipboard.writeText) {
+        copyBtn.addEventListener("click", () => {
+          navigator.clipboard.writeText(url).then(
+            () => {
+              copyBtn.textContent = "Copied!";
+              setTimeout(() => (copyBtn.textContent = "Copy link 📋"), 1500);
+            },
+            () => {
+              copyBtn.textContent = "Failed to copy";
+            }
+          );
+        });
+      } else if (copyBtn) {
+        copyBtn.style.display = "none";
+      }
+    }
+
+    function renderDoors(openedNumbers, highlightNumber) {
+      doorsGrid.innerHTML = "";
+      const openedSet = new Set(openedNumbers);
+
+      for (let i = 1; i <= TOTAL_DOORS; i++) {
+        const door = document.createElement("div");
+        door.className = "door";
+        if (openedSet.has(i)) {
+          door.classList.add("opened");
+        }
+        if (highlightNumber && i === highlightNumber) {
+          door.classList.add("today");
+        }
+
+        const numberEl = document.createElement("div");
+        numberEl.className = "door-number";
+        numberEl.textContent = i;
+
+        const labelEl = document.createElement("div");
+        labelEl.className = "door-label";
+        labelEl.textContent = openedSet.has(i)
+          ? "Opened"
+          : "Not opened yet";
+
+        const imageWrapper = document.createElement("div");
+        imageWrapper.className = "door-image";
+        imageWrapper.textContent = "Add day-" + i + ".png";
+
+        const img = new Image();
+        img.src = "images/day-" + i + ".png";
+        img.alt = "Surprise for day " + i;
+        img.onload = function () {
+          imageWrapper.textContent = "";
+          imageWrapper.appendChild(img);
+        };
+
+        door.appendChild(numberEl);
+        door.appendChild(labelEl);
+        door.appendChild(imageWrapper);
+
+        doorsGrid.appendChild(door);
+      }
+    }
+
+    function updateMessageAndButton(credits, remainingDoors) {
+      if (remainingDoors === 0) {
+        messageEl.textContent =
+          "All 24 doors have already been opened on this device!";
+        spinButton.disabled = true;
+        return;
+      }
+
+      if (credits > 0) {
+        const plural = credits === 1 ? "" : "s";
+        messageEl.textContent = `You have ${credits} spin${plural} available.`;
+        spinButton.disabled = false;
+      } else {
+        messageEl.textContent =
+          "No spins left right now. Come back tomorrow to earn another spin.";
+        spinButton.disabled = true;
+      }
+    }
+
+    function initAdvent() {
+      const today = todayKey();
+      const openedNumbers = loadOpenedNumbers();
+      let credits = parseInt(localStorage.getItem(STORAGE_CREDITS), 10);
+      if (Number.isNaN(credits) || credits < 0) credits = 0;
+
+      const lastSeenDay = localStorage.getItem(STORAGE_LAST_SEEN_DAY);
+      const remainingDoorsInitial = TOTAL_DOORS - openedNumbers.length;
+
+      if (!lastSeenDay) {
+        // First visit (after password): give 1 spin
+        credits = Math.min(credits + 1, remainingDoorsInitial);
+        localStorage.setItem(STORAGE_LAST_SEEN_DAY, today);
+        localStorage.setItem(STORAGE_CREDITS, String(credits));
+      } else if (lastSeenDay !== today) {
+        // New day: add spins equal to days passed
+        const missed = daysBetween(lastSeenDay, today);
+        if (missed > 0) {
+          credits = Math.min(
+            credits + missed,
+            TOTAL_DOORS - openedNumbers.length
+          );
+          localStorage.setItem(STORAGE_LAST_SEEN_DAY, today);
+          localStorage.setItem(STORAGE_CREDITS, String(credits));
+        }
+      }
+
+      const lastNumberStored = parseInt(
+        localStorage.getItem(STORAGE_LAST_NUMBER),
+        10
+      );
+      if (!Number.isNaN(lastNumberStored)) {
+        resultNumberEl.textContent = lastNumberStored;
+        buildShareLink(lastNumberStored);
+      } else {
+        resultNumberEl.textContent = "?";
+        shareLinkEl.textContent = "";
+      }
+
+      // Shared number in URL
+      const params = new URLSearchParams(window.location.search);
+      const sharedParamRaw = params.get("n");
+      const sharedNumber = sharedParamRaw
+        ? parseInt(sharedParamRaw, 10)
+        : NaN;
+      const sharedValid =
+        !Number.isNaN(sharedNumber) &&
+        sharedNumber >= 1 &&
+        sharedNumber <= TOTAL_DOORS;
+
+      let highlightNumber = null;
+      if (sharedValid) {
+        highlightNumber = sharedNumber;
+        if (Number.isNaN(lastNumberStored)) {
+          resultNumberEl.textContent = sharedNumber;
+        }
+        shareLinkEl.innerHTML =
+          "<div>Viewing shared number " + sharedNumber + ".</div>";
+      } else if (!Number.isNaN(lastNumberStored)) {
+        highlightNumber = lastNumberStored;
+      }
+
+      renderDoors(openedNumbers, highlightNumber);
+
+      const remainingDoors = TOTAL_DOORS - openedNumbers.length;
+      updateMessageAndButton(credits, remainingDoors);
+
+      spinButton.addEventListener("click", () => {
+        let currentCredits = parseInt(
+          localStorage.getItem(STORAGE_CREDITS),
+          10
+        );
+        if (Number.isNaN(currentCredits) || currentCredits < 0) {
+          currentCredits = 0;
+        }
+
+        const openedNow = loadOpenedNumbers();
+        const openedSetNow = new Set(openedNow);
+        const remaining = TOTAL_DOORS - openedNow.length;
+
+        if (remaining === 0) {
+          updateMessageAndButton(currentCredits, remaining);
+          return;
+        }
+
+        if (currentCredits <= 0) {
+          updateMessageAndButton(currentCredits, remaining);
+          return;
+        }
+
+        const candidates = [];
+        for (let i = 1; i <= TOTAL_DOORS; i++) {
+          if (!openedSetNow.has(i)) {
+            candidates.push(i);
+          }
+        }
+
+        if (candidates.length === 0) {
+          updateMessageAndButton(currentCredits, 0);
+          return;
+        }
+
+        const randomIndex = Math.floor(Math.random() * candidates.length);
+        const chosen = candidates[randomIndex];
+
+        openedNow.push(chosen);
+        saveOpenedNumbers(openedNow);
+
+        currentCredits -= 1;
+        const remainingAfter = TOTAL_DOORS - openedNow.length;
+        if (currentCredits < 0) currentCredits = 0;
+        if (currentCredits > remainingAfter) {
+          currentCredits = remainingAfter;
+        }
+
+        localStorage.setItem(STORAGE_CREDITS, String(currentCredits));
+        localStorage.setItem(STORAGE_LAST_SEEN_DAY, todayKey());
+        localStorage.setItem(STORAGE_LAST_NUMBER, String(chosen));
+
+        animateResult();
+        resultNumberEl.textContent = chosen;
+        const plural = currentCredits === 1 ? "" : "s";
+        messageEl.textContent = `Your number is ${chosen}. You have ${currentCredits} spin${plural} left.`;
+
+        buildShareLink(chosen);
+        renderDoors(openedNow, chosen);
+        updateMessageAndButton(currentCredits, remainingAfter);
+      });
+    }
+
+    // ========= PASSWORD HANDLING =========
+    function unlockApp() {
+      passwordOverlay.classList.add("hidden");
+      appContainer.style.visibility = "visible";
+      if (!spinButton.dataset.initialized) {
+        initAdvent();
+        spinButton.dataset.initialized = "true";
+      }
+    }
+
+    // If already authenticated in this browser, skip prompt
+    if (localStorage.getItem(STORAGE_AUTH_OK) === "yes") {
+      unlockApp();
+    } else {
+      appContainer.style.visibility = "hidden";
+      passwordInput.focus();
+    }
+
+    passwordForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const entered = passwordInput.value;
+      if (entered === ADVENT_PASSWORD) {
+        localStorage.setItem(STORAGE_AUTH_OK, "yes");
+        passwordError.textContent = "";
+        unlockApp();
+      } else {
+        passwordError.textContent = "Incorrect password.";
+        passwordInput.value = "";
+        passwordInput.focus();
+      }
+    });
+  </script>
+</body>
+</html>
