@@ -340,7 +340,7 @@
           圣诞礼物日历
         </h1>
         <p class="subtitle">
-          点击任意一扇门消耗一次机会。每扇打开的门都会抽到一个 1–24 的礼物号码，每个号码只会用一次。
+          从 12 月 1 日开始，每天增加 1 次机会。点击任意一扇门消耗一次机会。每扇打开的门都会抽到一个 1–24 的礼物号码，每个号码只会用一次。
         </p>
         <p id="message"></p>
       </header>
@@ -369,9 +369,6 @@
 
     // ========= ADVENT LOGIC =========
     const TOTAL_DOORS = 24;
-    const STORAGE_LAST_SEEN_DAY = "advent_last_seen_day";
-    const STORAGE_OPENED = "advent_opened_numbers"; // no longer used but kept for backward-compat
-    const STORAGE_CREDITS = "advent_spin_credits"; // how many spins are available
     const STORAGE_ASSIGNMENTS = "advent_door_assignments"; // { doorIndex: giftNumber }
 
     const doorsGrid = document.getElementById("doorsGrid");
@@ -383,25 +380,18 @@
     let currentCredits = 0;
     let assignments = {}; // doorIndex -> giftNumber
 
-    function todayKey() {
+    // 从当年 12 月 1 日算起，得到已经“解锁”的天数（上限 24）
+    function totalEarnedSpinsSoFar() {
       const now = new Date();
-      const y = now.getFullYear();
-      const m = String(now.getMonth() + 1).padStart(2, "0");
-      const d = String(now.getDate()).padStart(2, "0");
-      return `${y}-${m}-${d}`;
-    }
+      const year = now.getFullYear();
+      const start = new Date(year, 11, 1); // 11 = 12月（月份从 0 开始）
 
-    function keyToDate(key) {
-      const [y, m, d] = key.split("-").map(Number);
-      return new Date(y, m - 1, d);
-    }
+      if (now < start) return 0;
 
-    function daysBetween(dateKeyA, dateKeyB) {
-      const a = keyToDate(dateKeyA);
-      const b = keyToDate(dateKeyB);
-      const diffMs = b - a;
-      if (diffMs <= 0) return 0;
-      return Math.floor(diffMs / (1000 * 60 * 60 * 24));
+      const diffMs = now - start;
+      const dayMs = 1000 * 60 * 60 * 24;
+      const daysPassed = Math.floor(diffMs / dayMs) + 1; // 包含 12 月 1 日当天
+      return Math.min(TOTAL_DOORS, daysPassed);
     }
 
     function loadAssignments() {
@@ -430,6 +420,16 @@
       return used;
     }
 
+    // 根据当前日期和已打开的门，重新计算剩余机会
+    function recalcCredits() {
+      const openedCount = Object.keys(assignments).length;
+      const totalEarned = totalEarnedSpinsSoFar();
+      const remainingDoors = Math.max(0, TOTAL_DOORS - openedCount);
+
+      const rawCredits = totalEarned - openedCount;
+      currentCredits = Math.max(0, Math.min(rawCredits, remainingDoors));
+    }
+
     // Try to find an image for a given day with any of the supported extensions.
     function findImageForDay(day, callback) {
       let index = 0;
@@ -452,23 +452,20 @@
 
     function updateMessage(credits, remainingDoors) {
       if (remainingDoors === 0) {
-        messageEl.textContent =
-          "这台设备上的 24 扇门已经全部打开啦。";
+        messageEl.textContent = "这台设备上的 24 扇门已经全部打开啦。";
         return;
       }
 
       if (credits > 0) {
-        const plural = credits === 1 ? "" : "";
         messageEl.textContent = `你现在有 ${credits} 次机会。点击任意一扇未打开的门来抽取礼物号码。`;
       } else {
         messageEl.textContent =
-          "今天的机会已经用完啦。明天再来可以获得新的机会（之前没用的机会也会累积）。";
+          "今天的机会已经用完啦。随着日期往后，每天都会增加 1 次机会（之前没用的也会累积）。";
       }
     }
 
     function renderDoors() {
       doorsGrid.innerHTML = "";
-      const usedGifts = getUsedGiftNumbers(assignments);
       const openedCount = Object.keys(assignments).length;
       const remainingDoors = TOTAL_DOORS - openedCount;
 
@@ -527,8 +524,12 @@
             return;
           }
 
+          // Use up-to-date remainingDoors when checking
+          const openedNow = Object.keys(assignments).length;
+          const remainingNow = TOTAL_DOORS - openedNow;
+
           if (currentCredits <= 0) {
-            updateMessage(currentCredits, remainingDoors);
+            updateMessage(currentCredits, remainingNow);
             return;
           }
 
@@ -552,15 +553,8 @@
           assignments[day] = chosenGift;
           saveAssignments(assignments);
 
-          // Spend a spin
-          currentCredits -= 1;
-          if (currentCredits < 0) currentCredits = 0;
-          const openedAfter = Object.keys(assignments).length;
-          const remainingAfter = TOTAL_DOORS - openedAfter;
-          if (currentCredits > remainingAfter) {
-            currentCredits = remainingAfter;
-          }
-          localStorage.setItem(STORAGE_CREDITS, String(currentCredits));
+          // Recalculate credits based on new state
+          recalcCredits();
 
           // Update UI for this door
           door.classList.add("opened");
@@ -571,6 +565,8 @@
             door.insertBefore(giftNumberEl, imageWrapper);
           }
 
+          const openedAfter = Object.keys(assignments).length;
+          const remainingAfter = TOTAL_DOORS - openedAfter;
           updateMessage(currentCredits, remainingAfter);
         });
 
@@ -582,36 +578,7 @@
 
     function initAdvent() {
       assignments = loadAssignments();
-
-      // backward-compat: if old STORAGE_OPENED exists, we ignore it now
-      const today = todayKey();
-      let storedCredits = parseInt(localStorage.getItem(STORAGE_CREDITS), 10);
-      if (Number.isNaN(storedCredits) || storedCredits < 0) storedCredits = 0;
-
-      const lastSeenDay = localStorage.getItem(STORAGE_LAST_SEEN_DAY);
-      const openedCount = Object.keys(assignments).length;
-      let remainingDoors = TOTAL_DOORS - openedCount;
-      if (remainingDoors < 0) remainingDoors = 0;
-
-      if (!lastSeenDay) {
-        // First visit (after password): give 1 spin
-        storedCredits = Math.min(storedCredits + 1, remainingDoors);
-        localStorage.setItem(STORAGE_LAST_SEEN_DAY, today);
-        localStorage.setItem(STORAGE_CREDITS, String(storedCredits));
-      } else if (lastSeenDay !== today) {
-        // New day: add spins equal to days passed
-        const missed = daysBetween(lastSeenDay, today);
-        if (missed > 0) {
-          storedCredits = Math.min(
-            storedCredits + missed,
-            remainingDoors
-          );
-          localStorage.setItem(STORAGE_LAST_SEEN_DAY, today);
-          localStorage.setItem(STORAGE_CREDITS, String(storedCredits));
-        }
-      }
-
-      currentCredits = storedCredits;
+      recalcCredits();
       renderDoors();
     }
 
