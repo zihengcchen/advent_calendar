@@ -453,7 +453,7 @@
           <span class="emoji">🎄</span>
           Advent Calendar Roulette
         </h1>
-        <p class="subtitle">
+      <p class="subtitle">
           You earn 1 spin per day. If you skip days, your unused spins stack up — but each door from 1 to 24 can only open once.
         </p>
       </header>
@@ -488,8 +488,8 @@
       </div>
 
       <p class="footer-note">
-        Tip: To add images, create an <code>images</code> folder next to this file and add
-        files named <code>day-1.png</code>, <code>day-2.png</code>, … <code>day-24.png</code>.
+        Tip: Put your images in an <code>images</code> folder next to this file.  
+        Supported names: <code>day-1.png/jpg/jpeg/webp/gif</code>, … <code>day-24.*</code>.
       </p>
     </div>
   </div>
@@ -507,7 +507,7 @@
     const passwordError = document.getElementById("passwordError");
     const appContainer = document.getElementById("appContainer");
 
-    // ========= EXISTING ADVENT LOGIC =========
+    // ========= ADVENT LOGIC =========
     const TOTAL_DOORS = 24;
     const STORAGE_LAST_SEEN_DAY = "advent_last_seen_day";
     const STORAGE_LAST_NUMBER = "advent_last_number";
@@ -519,6 +519,9 @@
     const resultNumberEl = document.getElementById("resultNumber");
     const doorsGrid = document.getElementById("doorsGrid");
     const shareLinkEl = document.getElementById("shareLink");
+
+    // Supported image extensions for each day
+    const IMAGE_EXTS = ["png", "jpg", "jpeg", "webp", "gif"];
 
     function todayKey() {
       const now = new Date();
@@ -595,6 +598,26 @@
       }
     }
 
+    // Try to find an image for a given day with any of the supported extensions.
+    function findImageForDay(day, callback) {
+      let index = 0;
+
+      function tryNext() {
+        if (index >= IMAGE_EXTS.length) {
+          callback(null);
+          return;
+        }
+        const ext = IMAGE_EXTS[index++];
+        const img = new Image();
+        img.alt = "Surprise for day " + day;
+        img.onload = () => callback(img);
+        img.onerror = tryNext;
+        img.src = `images/day-${day}.${ext}`;
+      }
+
+      tryNext();
+    }
+
     function renderDoors(openedNumbers, highlightNumber) {
       doorsGrid.innerHTML = "";
       const openedSet = new Set(openedNumbers);
@@ -621,15 +644,15 @@
 
         const imageWrapper = document.createElement("div");
         imageWrapper.className = "door-image";
-        imageWrapper.textContent = "Add day-" + i + ".png";
+        imageWrapper.textContent = "Add day-" + i + ".*";
 
-        const img = new Image();
-        img.src = "images/day-" + i + ".png";
-        img.alt = "Surprise for day " + i;
-        img.onload = function () {
-          imageWrapper.textContent = "";
-          imageWrapper.appendChild(img);
-        };
+        // Asynchronously try to load an image for this day
+        findImageForDay(i, (img) => {
+          if (img) {
+            imageWrapper.textContent = "";
+            imageWrapper.appendChild(img);
+          }
+        });
 
         door.appendChild(numberEl);
         door.appendChild(labelEl);
