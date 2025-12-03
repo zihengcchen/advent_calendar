@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hans">
 <head>
   <meta charset="UTF-8" />
-  <title>Advent Calendar Roulette</title>
+  <title>2025 Advent Calendar</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     :root {
@@ -312,18 +312,18 @@
   <!-- PASSWORD OVERLAY -->
   <div id="passwordOverlay">
     <div class="password-box">
-      <h2>🎄 Advent Access</h2>
-      <p>Enter the password to open the advent calendar.</p>
+      <h2>🎄 日历入口</h2>
+      <p>输入密码解锁日历。</p>
       <form id="passwordForm">
         <div class="password-row">
           <input
             id="passwordInput"
             type="password"
             autocomplete="current-password"
-            placeholder="Password"
+            placeholder="密码"
             required
           />
-          <button id="passwordSubmit" type="submit">Enter</button>
+          <button id="passwordSubmit" type="submit">进入</button>
         </div>
         <div id="passwordError"></div>
       </form>
@@ -337,18 +337,18 @@
       <header>
         <h1>
           <span class="emoji">🎄</span>
-          Advent Calendar Roulette
+          圣诞礼物日历
         </h1>
         <p class="subtitle">
-          Click a door to spend a spin. Each opened door gets a random gift number from 1–24, used only once.
+          点击任意一扇门消耗一次机会。每扇打开的门都会抽到一个 1–24 的礼物号码，每个号码只会用一次。
         </p>
         <p id="message"></p>
       </header>
 
       <section class="calendar-card" aria-label="Advent calendar doors">
         <div class="calendar-header">
-          <h2>Advent doors <span>🗓️</span></h2>
-          <span class="sub">The number shown in a door is the gift you get for that day.</span>
+          <h2>日历 <span>🗓️</span></h2>
+          <span class="sub">门里显示的数字就是你今天的礼物编号。</span>
         </div>
         <div id="doorsGrid" class="doors-grid"></div>
       </section>
@@ -357,9 +357,8 @@
 
   <script>
     // ========= SIMPLE CLIENT-SIDE PASSWORD =========
-    // ⚠️ This is NOT secure against tech-savvy users.
-    // It only keeps casual visitors from using the page.
-    const ADVENT_PASSWORD = "bobodan520"; // <-- change this to your password
+    // ⚠️ 这只是简单防君子，不防技术党。
+    const ADVENT_PASSWORD = "bobodan520"; // <-- 改成你自己的密码
     const STORAGE_AUTH_OK = "advent_auth_ok";
 
     const passwordOverlay = document.getElementById("passwordOverlay");
@@ -442,7 +441,7 @@
         }
         const ext = IMAGE_EXTS[index++];
         const img = new Image();
-        img.alt = "Surprise for day " + day;
+        img.alt = "第 " + day + " 天的惊喜";
         img.onload = () => callback(img);
         img.onerror = tryNext;
         img.src = `images/day-${day}.${ext}`;
@@ -454,16 +453,16 @@
     function updateMessage(credits, remainingDoors) {
       if (remainingDoors === 0) {
         messageEl.textContent =
-          "All 24 doors have been opened on this device.";
+          "这台设备上的 24 扇门已经全部打开啦。";
         return;
       }
 
       if (credits > 0) {
-        const plural = credits === 1 ? "" : "s";
-        messageEl.textContent = `You have ${credits} spin${plural} available. Click a closed door to reveal its gift number.`;
+        const plural = credits === 1 ? "" : "";
+        messageEl.textContent = `你现在有 ${credits} 次机会。点击任意一扇未打开的门来抽取礼物号码。`;
       } else {
         messageEl.textContent =
-          "No spins left right now. Come back tomorrow to earn another spin (or to catch up on missed days).";
+          "今天的机会已经用完啦。明天再来可以获得新的机会（之前没用的机会也会累积）。";
       }
     }
 
@@ -493,7 +492,7 @@
         const labelEl = document.createElement("div");
         labelEl.className = "door-label";
         labelEl.textContent =
-          assignedGift != null ? `Gift #${assignedGift}` : "Not opened yet";
+          assignedGift != null ? `礼物 #${assignedGift}` : "尚未打开";
 
         header.appendChild(dayEl);
         header.appendChild(labelEl);
@@ -505,7 +504,7 @@
 
         const imageWrapper = document.createElement("div");
         imageWrapper.className = "door-image";
-        imageWrapper.textContent = "Add day-" + day + ".*";
+        imageWrapper.textContent = "添加 images/day-" + day + ".* 图片";
 
         // Asynchronously try to load an image for this day
         findImageForDay(day, (img) => {
@@ -565,7 +564,7 @@
 
           // Update UI for this door
           door.classList.add("opened");
-          labelEl.textContent = `Gift #${chosenGift}`;
+          labelEl.textContent = `礼物 #${chosenGift}`;
           giftNumberEl.textContent = chosenGift;
           giftNumberEl.classList.add("spin");
           if (!door.contains(giftNumberEl)) {
@@ -639,7 +638,7 @@
         passwordError.textContent = "";
         unlockApp();
       } else {
-        passwordError.textContent = "Incorrect password.";
+        passwordError.textContent = "密码错误。";
         passwordInput.value = "";
         passwordInput.focus();
       }
