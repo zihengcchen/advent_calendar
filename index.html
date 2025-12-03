@@ -88,159 +88,22 @@
     h1 span.emoji { font-size: 1.4em; }
 
     .subtitle {
-      margin: 0 0 18px;
+      margin: 0 0 8px;
       color: var(--text-muted);
       font-size: 0.98rem;
     }
 
-    .top-row {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      margin-bottom: 20px;
+    #message {
+      margin: 0 0 18px;
+      font-size: 0.9rem;
+      color: var(--text-muted);
     }
 
-    @media (min-width: 768px) {
-      .top-row { flex-direction: row; }
-    }
-
-    .roulette-card,
     .calendar-card {
       background: var(--bg-card);
       border-radius: var(--border-radius);
       padding: 18px 18px 20px;
       border: 1px solid rgba(255, 255, 255, 0.12);
-    }
-
-    .roulette-card { flex: 1.1; }
-    .calendar-card { flex: 1.4; }
-
-    .controls {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-      margin-bottom: 12px;
-    }
-
-    button {
-      border: none;
-      outline: none;
-      cursor: pointer;
-      font: inherit;
-    }
-
-    #spinButton {
-      padding: 10px 22px;
-      border-radius: 999px;
-      background: linear-gradient(135deg, #f4c542, #f08c2e);
-      color: #201001;
-      font-weight: 600;
-      font-size: 0.98rem;
-      box-shadow:
-        0 10px 24px rgba(0, 0, 0, 0.45),
-        0 0 0 1px rgba(255, 255, 255, 0.2);
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4em;
-      transition: transform 0.08s ease, box-shadow 0.08s ease, filter 0.12s;
-    }
-
-    #spinButton:hover:not(:disabled) {
-      transform: translateY(-1px);
-      box-shadow:
-        0 14px 28px rgba(0, 0, 0, 0.55),
-        0 0 0 1px rgba(255, 255, 255, 0.24);
-      filter: brightness(1.02);
-    }
-
-    #spinButton:active:not(:disabled) {
-      transform: translateY(1px) scale(0.99);
-      box-shadow:
-        0 6px 16px rgba(0, 0, 0, 0.55),
-        0 0 0 1px rgba(255, 255, 255, 0.16);
-    }
-
-    #spinButton:disabled {
-      cursor: not-allowed;
-      opacity: 0.65;
-      box-shadow:
-        0 4px 12px rgba(0, 0, 0, 0.45),
-        0 0 0 1px rgba(255, 255, 255, 0.14);
-    }
-
-    #message {
-      font-size: 0.88rem;
-      color: var(--text-muted);
-    }
-
-    .result-wrapper {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-
-    .result-label {
-      font-size: 0.88rem;
-      color: var(--text-muted);
-    }
-
-    #resultNumber {
-      width: 78px;
-      height: 78px;
-      border-radius: 22px;
-      border: 2px solid rgba(255, 255, 255, 0.48);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 2.4rem;
-      font-weight: 700;
-      background: radial-gradient(circle at 30% 20%, #ffe9a4 0, #f4c542 50%, #c77b22 100%);
-      color: #2d1a02;
-      box-shadow:
-        0 10px 20px rgba(0, 0, 0, 0.55),
-        0 0 0 3px rgba(0, 0, 0, 0.45);
-    }
-
-    /* spin animation */
-    .spin { animation: spin-bounce 0.7s ease-out; }
-
-    @keyframes spin-bounce {
-      0%   { transform: scale(1) rotate(0deg); }
-      30%  { transform: scale(1.25) rotate(8deg); }
-      60%  { transform: scale(1.25) rotate(-8deg); }
-      100% { transform: scale(1) rotate(0deg); }
-    }
-
-    #shareLink {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      word-break: break-all;
-    }
-
-    #shareLink a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-
-    #shareLink a:hover { text-decoration: underline; }
-
-    #copyButton {
-      padding: 5px 10px;
-      border-radius: 999px;
-      background: rgba(244, 197, 66, 0.1);
-      color: var(--accent);
-      font-size: 0.78rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.2em;
-      margin-left: 6px;
-      border: 1px solid rgba(244, 197, 66, 0.4);
-    }
-
-    #copyButton:hover {
-      background: rgba(244, 197, 66, 0.18);
     }
 
     .calendar-header {
@@ -285,12 +148,12 @@
       background: var(--door-bg);
       border: 1px solid rgba(255, 255, 255, 0.12);
       padding: 10px 10px 12px;
-      min-height: 120px;  /* bigger doors */
+      min-height: 120px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s;
-      cursor: default;
+      cursor: pointer;
     }
 
     .door:hover {
@@ -299,15 +162,28 @@
       background: rgba(255, 255, 255, 0.09);
     }
 
+    .door-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 6px;
+    }
+
     .door-number {
-      font-size: 1.3rem;
+      font-size: 1.1rem;
       font-weight: 600;
     }
 
     .door-label {
       font-size: 0.78rem;
       color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .gift-number {
       margin-top: 4px;
+      font-size: 1.6rem;
+      font-weight: 700;
     }
 
     .door.opened {
@@ -320,11 +196,11 @@
     .door.today { box-shadow: var(--today-glow); }
 
     .door-image {
-      margin-top: 10px;
+      margin-top: 8px;
       border-radius: 8px;
       overflow: hidden;
       background: rgba(0, 0, 0, 0.3);
-      height: 70px;  /* taller image area */
+      height: 70px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -343,6 +219,16 @@
       margin-top: 14px;
       font-size: 0.75rem;
       color: var(--text-muted);
+    }
+
+    /* spin animation, used on gift number */
+    .spin { animation: spin-bounce 0.7s ease-out; }
+
+    @keyframes spin-bounce {
+      0%   { transform: scale(1) rotate(0deg); }
+      30%  { transform: scale(1.25) rotate(8deg); }
+      60%  { transform: scale(1.25) rotate(-8deg); }
+      100% { transform: scale(1) rotate(0deg); }
     }
 
     /* PASSWORD OVERLAY */
@@ -427,7 +313,7 @@
   <div id="passwordOverlay">
     <div class="password-box">
       <h2>🎄 Advent Access</h2>
-      <p>Enter the password to open the advent roulette.</p>
+      <p>Enter the password to open the advent calendar.</p>
       <form id="passwordForm">
         <div class="password-row">
           <input
@@ -454,38 +340,18 @@
           Advent Calendar Roulette
         </h1>
         <p class="subtitle">
-          You earn 1 spin per day. If you skip days, your unused spins stack up — but each door from 1 to 24 can only open once.
+          Click a door to spend a spin. Each opened door gets a random gift number from 1–24, used only once.
         </p>
+        <p id="message"></p>
       </header>
 
-      <div class="top-row">
-        <!-- Roulette / result card -->
-        <section class="roulette-card" aria-label="Advent roulette">
-          <div class="controls">
-            <button id="spinButton" type="button">
-              <span>Spin the roulette</span> <span>🎁</span>
-            </button>
-            <div id="message"></div>
-          </div>
-
-          <div class="result-wrapper">
-            <div>
-              <div class="result-label">Last spin result:</div>
-              <div id="resultNumber">?</div>
-            </div>
-            <div id="shareLink"></div>
-          </div>
-        </section>
-
-        <!-- Calendar grid card -->
-        <section class="calendar-card" aria-label="Advent calendar doors">
-          <div class="calendar-header">
-            <h2>Advent doors <span>🗓️</span></h2>
-            <span class="sub">Opened doors are highlighted — hover to see their surprise image.</span>
-          </div>
-          <div id="doorsGrid" class="doors-grid"></div>
-        </section>
-      </div>
+      <section class="calendar-card" aria-label="Advent calendar doors">
+        <div class="calendar-header">
+          <h2>Advent doors <span>🗓️</span></h2>
+          <span class="sub">The number shown in a door is the gift you get for that day.</span>
+        </div>
+        <div id="doorsGrid" class="doors-grid"></div>
+      </section>
 
       <p class="footer-note">
         Tip: Put your images in an <code>images</code> folder next to this file.<br />
@@ -510,18 +376,18 @@
     // ========= ADVENT LOGIC =========
     const TOTAL_DOORS = 24;
     const STORAGE_LAST_SEEN_DAY = "advent_last_seen_day";
-    const STORAGE_LAST_NUMBER = "advent_last_number";
-    const STORAGE_OPENED = "advent_opened_numbers";
+    const STORAGE_OPENED = "advent_opened_numbers"; // no longer used but kept for backward-compat
     const STORAGE_CREDITS = "advent_spin_credits"; // how many spins are available
+    const STORAGE_ASSIGNMENTS = "advent_door_assignments"; // { doorIndex: giftNumber }
 
-    const spinButton = document.getElementById("spinButton");
-    const messageEl = document.getElementById("message");
-    const resultNumberEl = document.getElementById("resultNumber");
     const doorsGrid = document.getElementById("doorsGrid");
-    const shareLinkEl = document.getElementById("shareLink");
+    const messageEl = document.getElementById("message");
 
     // Supported image extensions for each day
     const IMAGE_EXTS = ["png", "jpg", "jpeg", "webp", "gif"];
+
+    let currentCredits = 0;
+    let assignments = {}; // doorIndex -> giftNumber
 
     function todayKey() {
       const now = new Date();
@@ -544,58 +410,30 @@
       return Math.floor(diffMs / (1000 * 60 * 60 * 24));
     }
 
-    function loadOpenedNumbers() {
+    function loadAssignments() {
       try {
-        const raw = localStorage.getItem(STORAGE_OPENED);
-        if (!raw) return [];
+        const raw = localStorage.getItem(STORAGE_ASSIGNMENTS);
+        if (!raw) return {};
         const parsed = JSON.parse(raw);
-        return Array.isArray(parsed) ? parsed : [];
+        return parsed && typeof parsed === "object" ? parsed : {};
       } catch (e) {
-        return [];
+        return {};
       }
     }
 
-    function saveOpenedNumbers(list) {
-      localStorage.setItem(STORAGE_OPENED, JSON.stringify(list));
+    function saveAssignments(obj) {
+      localStorage.setItem(STORAGE_ASSIGNMENTS, JSON.stringify(obj));
     }
 
-    function animateResult() {
-      resultNumberEl.classList.remove("spin");
-      void resultNumberEl.offsetWidth; // reflow
-      resultNumberEl.classList.add("spin");
-    }
-
-    function buildShareLink(number) {
-      const url =
-        window.location.origin +
-        window.location.pathname +
-        `?n=${encodeURIComponent(number)}`;
-      shareLinkEl.innerHTML = `
-        <div>
-          <div>Share this number:</div>
-          <div>
-            <a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>
-            <button id="copyButton" type="button">Copy link 📋</button>
-          </div>
-        </div>
-      `;
-
-      const copyBtn = document.getElementById("copyButton");
-      if (copyBtn && navigator.clipboard && navigator.clipboard.writeText) {
-        copyBtn.addEventListener("click", () => {
-          navigator.clipboard.writeText(url).then(
-            () => {
-              copyBtn.textContent = "Copied!";
-              setTimeout(() => (copyBtn.textContent = "Copy link 📋"), 1500);
-            },
-            () => {
-              copyBtn.textContent = "Failed to copy";
-            }
-          );
-        });
-      } else if (copyBtn) {
-        copyBtn.style.display = "none";
+    function getUsedGiftNumbers(assignmentsObj) {
+      const used = new Set();
+      for (const key in assignmentsObj) {
+        if (Object.hasOwn(assignmentsObj, key)) {
+          const val = assignmentsObj[key];
+          if (typeof val === "number") used.add(val);
+        }
       }
+      return used;
     }
 
     // Try to find an image for a given day with any of the supported extensions.
@@ -618,207 +456,176 @@
       tryNext();
     }
 
-    function renderDoors(openedNumbers, highlightNumber) {
-      doorsGrid.innerHTML = "";
-      const openedSet = new Set(openedNumbers);
+    function updateMessage(credits, remainingDoors) {
+      if (remainingDoors === 0) {
+        messageEl.textContent =
+          "All 24 doors have been opened on this device.";
+        return;
+      }
 
-      for (let i = 1; i <= TOTAL_DOORS; i++) {
+      if (credits > 0) {
+        const plural = credits === 1 ? "" : "s";
+        messageEl.textContent = `You have ${credits} spin${plural} available. Click a closed door to reveal its gift number.`;
+      } else {
+        messageEl.textContent =
+          "No spins left right now. Come back tomorrow to earn another spin (or to catch up on missed days).";
+      }
+    }
+
+    function renderDoors() {
+      doorsGrid.innerHTML = "";
+      const usedGifts = getUsedGiftNumbers(assignments);
+      const openedCount = Object.keys(assignments).length;
+      const remainingDoors = TOTAL_DOORS - openedCount;
+
+      for (let day = 1; day <= TOTAL_DOORS; day++) {
         const door = document.createElement("div");
         door.className = "door";
-        if (openedSet.has(i)) {
+
+        const assignedGift = assignments[day];
+
+        if (assignedGift != null) {
           door.classList.add("opened");
         }
-        if (highlightNumber && i === highlightNumber) {
-          door.classList.add("today");
-        }
 
-        const numberEl = document.createElement("div");
-        numberEl.className = "door-number";
-        numberEl.textContent = i;
+        const header = document.createElement("div");
+        header.className = "door-header";
+
+        const dayEl = document.createElement("div");
+        dayEl.className = "door-number";
+        dayEl.textContent = day; // the day number
 
         const labelEl = document.createElement("div");
         labelEl.className = "door-label";
-        labelEl.textContent = openedSet.has(i)
-          ? "Opened"
-          : "Not opened yet";
+        labelEl.textContent =
+          assignedGift != null ? `Gift #${assignedGift}` : "Not opened yet";
+
+        header.appendChild(dayEl);
+        header.appendChild(labelEl);
+
+        const giftNumberEl = document.createElement("div");
+        giftNumberEl.className = "gift-number";
+        giftNumberEl.textContent =
+          assignedGift != null ? assignedGift : ""; // show big number only when opened
 
         const imageWrapper = document.createElement("div");
         imageWrapper.className = "door-image";
-        imageWrapper.textContent = "Add day-" + i + ".*";
+        imageWrapper.textContent = "Add day-" + day + ".*";
 
         // Asynchronously try to load an image for this day
-        findImageForDay(i, (img) => {
+        findImageForDay(day, (img) => {
           if (img) {
             imageWrapper.textContent = "";
             imageWrapper.appendChild(img);
           }
         });
 
-        door.appendChild(numberEl);
-        door.appendChild(labelEl);
+        door.appendChild(header);
+        if (assignedGift != null) {
+          door.appendChild(giftNumberEl);
+        }
         door.appendChild(imageWrapper);
+
+        // Door click handler (spend a spin, assign random gift number)
+        door.addEventListener("click", () => {
+          // If already opened, do nothing
+          if (assignments[day] != null) {
+            return;
+          }
+
+          if (currentCredits <= 0) {
+            updateMessage(currentCredits, remainingDoors);
+            return;
+          }
+
+          const usedSet = getUsedGiftNumbers(assignments);
+          const candidates = [];
+          for (let gift = 1; gift <= TOTAL_DOORS; gift++) {
+            if (!usedSet.has(gift)) {
+              candidates.push(gift);
+            }
+          }
+
+          if (candidates.length === 0) {
+            updateMessage(currentCredits, 0);
+            return;
+          }
+
+          const randomIndex = Math.floor(Math.random() * candidates.length);
+          const chosenGift = candidates[randomIndex];
+
+          // Assign and persist
+          assignments[day] = chosenGift;
+          saveAssignments(assignments);
+
+          // Spend a spin
+          currentCredits -= 1;
+          if (currentCredits < 0) currentCredits = 0;
+          const openedAfter = Object.keys(assignments).length;
+          const remainingAfter = TOTAL_DOORS - openedAfter;
+          if (currentCredits > remainingAfter) {
+            currentCredits = remainingAfter;
+          }
+          localStorage.setItem(STORAGE_CREDITS, String(currentCredits));
+
+          // Update UI for this door
+          door.classList.add("opened");
+          labelEl.textContent = `Gift #${chosenGift}`;
+          giftNumberEl.textContent = chosenGift;
+          giftNumberEl.classList.add("spin");
+          if (!door.contains(giftNumberEl)) {
+            door.insertBefore(giftNumberEl, imageWrapper);
+          }
+
+          updateMessage(currentCredits, remainingAfter);
+        });
 
         doorsGrid.appendChild(door);
       }
-    }
 
-    function updateMessageAndButton(credits, remainingDoors) {
-      if (remainingDoors === 0) {
-        messageEl.textContent =
-          "All 24 doors have already been opened on this device!";
-        spinButton.disabled = true;
-        return;
-      }
-
-      if (credits > 0) {
-        const plural = credits === 1 ? "" : "s";
-        messageEl.textContent = `You have ${credits} spin${plural} available.`;
-        spinButton.disabled = false;
-      } else {
-        messageEl.textContent =
-          "No spins left right now. Come back tomorrow to earn another spin.";
-        spinButton.disabled = true;
-      }
+      updateMessage(currentCredits, remainingDoors);
     }
 
     function initAdvent() {
+      assignments = loadAssignments();
+
+      // backward-compat: if old STORAGE_OPENED exists, we ignore it now
       const today = todayKey();
-      const openedNumbers = loadOpenedNumbers();
-      let credits = parseInt(localStorage.getItem(STORAGE_CREDITS), 10);
-      if (Number.isNaN(credits) || credits < 0) credits = 0;
+      let storedCredits = parseInt(localStorage.getItem(STORAGE_CREDITS), 10);
+      if (Number.isNaN(storedCredits) || storedCredits < 0) storedCredits = 0;
 
       const lastSeenDay = localStorage.getItem(STORAGE_LAST_SEEN_DAY);
-      const remainingDoorsInitial = TOTAL_DOORS - openedNumbers.length;
+      const openedCount = Object.keys(assignments).length;
+      let remainingDoors = TOTAL_DOORS - openedCount;
+      if (remainingDoors < 0) remainingDoors = 0;
 
       if (!lastSeenDay) {
         // First visit (after password): give 1 spin
-        credits = Math.min(credits + 1, remainingDoorsInitial);
+        storedCredits = Math.min(storedCredits + 1, remainingDoors);
         localStorage.setItem(STORAGE_LAST_SEEN_DAY, today);
-        localStorage.setItem(STORAGE_CREDITS, String(credits));
+        localStorage.setItem(STORAGE_CREDITS, String(storedCredits));
       } else if (lastSeenDay !== today) {
         // New day: add spins equal to days passed
         const missed = daysBetween(lastSeenDay, today);
         if (missed > 0) {
-          credits = Math.min(
-            credits + missed,
-            TOTAL_DOORS - openedNumbers.length
+          storedCredits = Math.min(
+            storedCredits + missed,
+            remainingDoors
           );
           localStorage.setItem(STORAGE_LAST_SEEN_DAY, today);
-          localStorage.setItem(STORAGE_CREDITS, String(credits));
+          localStorage.setItem(STORAGE_CREDITS, String(storedCredits));
         }
       }
 
-      const lastNumberStored = parseInt(
-        localStorage.getItem(STORAGE_LAST_NUMBER),
-        10
-      );
-      if (!Number.isNaN(lastNumberStored)) {
-        resultNumberEl.textContent = lastNumberStored;
-        buildShareLink(lastNumberStored);
-      } else {
-        resultNumberEl.textContent = "?";
-        shareLinkEl.textContent = "";
-      }
-
-      // Shared number in URL
-      const params = new URLSearchParams(window.location.search);
-      const sharedParamRaw = params.get("n");
-      const sharedNumber = sharedParamRaw
-        ? parseInt(sharedParamRaw, 10)
-        : NaN;
-      const sharedValid =
-        !Number.isNaN(sharedNumber) &&
-        sharedNumber >= 1 &&
-        sharedNumber <= TOTAL_DOORS;
-
-      let highlightNumber = null;
-      if (sharedValid) {
-        highlightNumber = sharedNumber;
-        if (Number.isNaN(lastNumberStored)) {
-          resultNumberEl.textContent = sharedNumber;
-        }
-        shareLinkEl.innerHTML =
-          "<div>Viewing shared number " + sharedNumber + ".</div>";
-      } else if (!Number.isNaN(lastNumberStored)) {
-        highlightNumber = lastNumberStored;
-      }
-
-      renderDoors(openedNumbers, highlightNumber);
-
-      const remainingDoors = TOTAL_DOORS - openedNumbers.length;
-      updateMessageAndButton(credits, remainingDoors);
-
-      spinButton.addEventListener("click", () => {
-        let currentCredits = parseInt(
-          localStorage.getItem(STORAGE_CREDITS),
-          10
-        );
-        if (Number.isNaN(currentCredits) || currentCredits < 0) {
-          currentCredits = 0;
-        }
-
-        const openedNow = loadOpenedNumbers();
-        const openedSetNow = new Set(openedNow);
-        const remaining = TOTAL_DOORS - openedNow.length;
-
-        if (remaining === 0) {
-          updateMessageAndButton(currentCredits, remaining);
-          return;
-        }
-
-        if (currentCredits <= 0) {
-          updateMessageAndButton(currentCredits, remaining);
-          return;
-        }
-
-        const candidates = [];
-        for (let i = 1; i <= TOTAL_DOORS; i++) {
-          if (!openedSetNow.has(i)) {
-            candidates.push(i);
-          }
-        }
-
-        if (candidates.length === 0) {
-          updateMessageAndButton(currentCredits, 0);
-          return;
-        }
-
-        const randomIndex = Math.floor(Math.random() * candidates.length);
-        const chosen = candidates[randomIndex];
-
-        openedNow.push(chosen);
-        saveOpenedNumbers(openedNow);
-
-        currentCredits -= 1;
-        const remainingAfter = TOTAL_DOORS - openedNow.length;
-        if (currentCredits < 0) currentCredits = 0;
-        if (currentCredits > remainingAfter) {
-          currentCredits = remainingAfter;
-        }
-
-        localStorage.setItem(STORAGE_CREDITS, String(currentCredits));
-        localStorage.setItem(STORAGE_LAST_SEEN_DAY, todayKey());
-        localStorage.setItem(STORAGE_LAST_NUMBER, String(chosen));
-
-        animateResult();
-        resultNumberEl.textContent = chosen;
-        const plural = currentCredits === 1 ? "" : "s";
-        messageEl.textContent = `Your number is ${chosen}. You have ${currentCredits} spin${plural} left.`;
-
-        buildShareLink(chosen);
-        renderDoors(openedNow, chosen);
-        updateMessageAndButton(currentCredits, remainingAfter);
-      });
+      currentCredits = storedCredits;
+      renderDoors();
     }
 
     // ========= PASSWORD HANDLING =========
     function unlockApp() {
       passwordOverlay.classList.add("hidden");
       appContainer.style.visibility = "visible";
-      if (!spinButton.dataset.initialized) {
-        initAdvent();
-        spinButton.dataset.initialized = "true";
-      }
+      initAdvent();
     }
 
     // If already authenticated in this browser, skip prompt
